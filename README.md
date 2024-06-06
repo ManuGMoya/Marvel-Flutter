@@ -41,3 +41,24 @@ This is a Flutter project that implements a master-detail pattern using the Marv
 Run the application on an emulator or physical device:
 ```bash
 flutter run
+```
+
+## Project Structure
+- **lib/** Contains the application's source code.
+- **models/** Data models used in the application.
+- **providers/** Providers for state management.
+- **screens/** Application screens.
+- **services/** Services to interact with the Marvel API.
+- **widgets/** Reusable UI components.
+- **main.dart** Entry point of the application.
+- 
+## Contributions
+Contributions are welcome. Please open an issue or submit a pull request for any improvements or corrections.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Links
+- **Marvel API**: https://developer.marvel.com/
+- **GitHub Repository**:
+
