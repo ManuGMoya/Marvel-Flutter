@@ -13,13 +13,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scrollController = ScrollController();
+  int _nextPage = 0;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<MarvelApiProvider>(context, listen: false).fetchCharacters();
+      Provider.of<MarvelApiProvider>(context, listen: false)
+          .fetchCharacters(_nextPage, 20);
     });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _nextPage += 20;
+        Provider.of<MarvelApiProvider>(context, listen: false)
+            .fetchCharacters(_nextPage, 20);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -29,6 +48,7 @@ class HomeScreenState extends State<HomeScreen> {
       body: Consumer<MarvelApiProvider>(
         builder: (context, marvelApi, child) {
           return GridView.builder(
+            controller: _scrollController,
             itemCount: marvelApi.characters.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2),
@@ -54,13 +74,15 @@ class HomeScreenState extends State<HomeScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: CachedNetworkImage(
-                            imageUrl: "${marvelApi.characters[index].thumbnail?.path}"
+                            imageUrl:
+                                "${marvelApi.characters[index].thumbnail?.path}"
                                 ".${marvelApi.characters[index].thumbnail?.extension}",
                             placeholder: (context, url) => const AspectRatio(
                               aspectRatio: 1.0,
                               child: CircularProgressIndicator(),
                             ),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                             fit: BoxFit.cover,
                           ),
                         ),

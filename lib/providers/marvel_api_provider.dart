@@ -11,8 +11,10 @@ class MarvelApiProvider with ChangeNotifier {
 
   List<Character> get characters => _characters;
 
-  Future<void> fetchCharacters() async {
-    _characters = await characterRepository.getAllCharacters(0, 20);
+  Future<void> fetchCharacters(int start, int count) async {
+    List<Character> newCharacters =
+        await characterRepository.getAllCharacters(start, count);
+    _characters.addAll(newCharacters);
     notifyListeners();
   }
 }
