@@ -6,8 +6,7 @@ This is a Flutter project that implements a master-detail pattern using the Marv
 
 - **Flutter**: Cross-platform mobile application development framework.
 - **Provider**: ^6.0.1 - For state management.
-- **HTTP**: ^1.2.1 - To make HTTP requests.
-- **Dio**: ^5.0.0 - Another HTTP request library with more features.
+- **Dio**: ^5.0.0 - To make HTTP request library with more features.
 - **Crypto**: ^3.0.1 - For cryptographic operations needed for authentication with the Marvel API.
 - **Flutter Dotenv**: ^5.0.2 - To handle environment variables.
 
@@ -37,6 +36,7 @@ This is a Flutter project that implements a master-detail pattern using the Marv
     ```
 
 ## Usage
+After running the app, you will see a list of Marvel characters. You can scroll through the list to view more characters. Tapping on a character will take you to a detailed view where you can see more information about the character and the comics they appear in.
 
 Run the application on an emulator or physical device:
 ```bash
@@ -60,5 +60,6 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Links
 - **Marvel API**: https://developer.marvel.com/
-- **GitHub Repository**:
+- **Flutter**: https://flutter.dev/
+- **GitHub Repository**: https://github.com/ManuGMoya/marvel_flutter
 
