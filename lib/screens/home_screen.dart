@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,14 +43,33 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: Image.network(
-                  "${marvelApi.characters[index].thumbnail?.path}"
-                  ".${marvelApi.characters[index].thumbnail?.extension}",
-                  fit: BoxFit.cover,
-                  errorBuilder: (BuildContext context, Object exception,
-                      StackTrace? stackTrace) {
-                    return const Text('No se pudo cargar la imagen');
-                  },
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: "${marvelApi.characters[index].thumbnail?.path}"
+                                ".${marvelApi.characters[index].thumbnail?.extension}",
+                            placeholder: (context, url) => const AspectRatio(
+                              aspectRatio: 1.0,
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text("${marvelApi.characters[index].name}"),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
