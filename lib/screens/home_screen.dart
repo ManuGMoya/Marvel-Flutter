@@ -14,23 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-  int _nextPage = 0;
+  int _nextPage = 20;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<MarvelApiProvider>(context, listen: false)
-          .fetchCharacters(_nextPage, 20);
-    });
-
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _nextPage += 20;
         Provider.of<MarvelApiProvider>(context, listen: false)
             .fetchCharacters(_nextPage, 20);
+        _nextPage += 20;
       }
     });
   }
@@ -49,51 +44,56 @@ class HomeScreenState extends State<HomeScreen> {
         builder: (context, marvelApi, child) {
           return GridView.builder(
             controller: _scrollController,
-            itemCount: marvelApi.characters.length,
+            itemCount:
+                marvelApi.characters.length + (marvelApi.isLoadingMore ? 2 : 0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2),
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CharacterDetailScreen(
-                          character: marvelApi.characters[index]),
+              if (index >= marvelApi.characters.length) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CharacterDetailScreen(
+                            character: marvelApi.characters[index]),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                  );
-                },
-                child: Card(
-                  clipBehavior: Clip.antiAlias,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                "${marvelApi.characters[index].thumbnail?.path}"
-                                ".${marvelApi.characters[index].thumbnail?.extension}",
-                            placeholder: (context, url) => const AspectRatio(
-                              aspectRatio: 1.0,
-                              child: CircularProgressIndicator(),
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  "${marvelApi.characters[index].thumbnail?.path}"
+                                  ".${marvelApi.characters[index].thumbnail?.extension}",
+                              placeholder: (context, url) => const AspectRatio(
+                                aspectRatio: 1.0,
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                            fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                      ListTile(
-                        title: Text("${marvelApi.characters[index].name}"),
-                      ),
-                    ],
+                        ListTile(
+                          title: Text("${marvelApi.characters[index].name}"),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             },
           );
         },
