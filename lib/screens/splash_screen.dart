@@ -1,9 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../providers/marvel_api_provider.dart';
+import '../bloc/marvel_bloc.dart';
+import '../bloc/marvel_event.dart';
+import '../bloc/marvel_state.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,18 +26,8 @@ class SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchData();
+      BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(0, 20));
     });
-  }
-
-  Future<void> fetchData() async {
-    final marvelApiProvider =
-        Provider.of<MarvelApiProvider>(context, listen: false);
-    await Future.wait([
-      marvelApiProvider.fetchCharacters(0, 20),
-      Future.delayed(const Duration(seconds: 2)),
-    ]);
-    navigateToHomeScreen();
   }
 
   void navigateToHomeScreen() {
@@ -55,9 +45,22 @@ class SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: RotationTransition(
-          turns: _controller,
-          child: Image.asset('assets/logo.png'),
+        child: BlocBuilder<MarvelBloc, MarvelState>(
+          builder: (context, state) {
+            if (state is MarvelLoading) {
+              return RotationTransition(
+                turns: _controller,
+                child: Image.asset('assets/logo.png'),
+              );
+            } else if (state is MarvelLoaded) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                navigateToHomeScreen();
+              });
+              return const SizedBox.shrink(); // Return an empty widget
+            } else {
+              return const Text('Error');
+            }
+          },
         ),
       ),
     );

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../providers/marvel_api_provider.dart';
+import '../bloc/marvel_bloc.dart';
+import '../bloc/marvel_event.dart';
+import '../bloc/marvel_state.dart';
 import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,11 +25,13 @@ class HomeScreenState extends State<HomeScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        Provider.of<MarvelApiProvider>(context, listen: false)
-            .fetchCharacters(_nextPage, 20);
+        BlocProvider.of<MarvelBloc>(context)
+            .add(FetchCharacters(_nextPage, 20));
         _nextPage += 20;
       }
     });
+
+    BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(0, 20));
   }
 
   @override
@@ -40,25 +44,24 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Marvel Characters')),
-      body: Consumer<MarvelApiProvider>(
-        builder: (context, marvelApi, child) {
-          return GridView.builder(
-            controller: _scrollController,
-            itemCount:
-                marvelApi.characters.length + (marvelApi.isLoadingMore ? 2 : 0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
-            itemBuilder: (context, index) {
-              if (index >= marvelApi.characters.length) {
-                return const Center(child: CircularProgressIndicator());
-              } else {
+      body: BlocBuilder<MarvelBloc, MarvelState>(
+        builder: (context, state) {
+          if (state is MarvelLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is MarvelLoaded) {
+            return GridView.builder(
+              controller: _scrollController,
+              itemCount: state.characters.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2),
+              itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CharacterDetailScreen(
-                            character: marvelApi.characters[index]),
+                            character: state.characters[index]),
                       ),
                     );
                   },
@@ -74,8 +77,8 @@ class HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: CachedNetworkImage(
                               imageUrl:
-                                  "${marvelApi.characters[index].thumbnail?.path}"
-                                  ".${marvelApi.characters[index].thumbnail?.extension}",
+                                  "${state.characters[index].thumbnail?.path}"
+                                  ".${state.characters[index].thumbnail?.extension}",
                               placeholder: (context, url) => const AspectRatio(
                                 aspectRatio: 1.0,
                                 child: CircularProgressIndicator(),
@@ -87,15 +90,17 @@ class HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         ListTile(
-                          title: Text("${marvelApi.characters[index].name}"),
+                          title: Text("${state.characters[index].name}"),
                         ),
                       ],
                     ),
                   ),
                 );
-              }
-            },
-          );
+              },
+            );
+          } else {
+            return const Center(child: Text('Error'));
+          }
         },
       ),
     );

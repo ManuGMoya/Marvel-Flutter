@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:marvel_flutter/providers/marvel_api_provider.dart';
 import 'package:marvel_flutter/repositories/character_repository.dart';
 import 'package:marvel_flutter/screens/splash_screen.dart'; // Asegúrate de importar SplashScreen
 import 'package:marvel_flutter/services/api_service.dart';
 import 'package:marvel_flutter/services/marvel_interceptor.dart';
-import 'package:provider/provider.dart';
+
+import 'bloc/marvel_bloc.dart';
 
 void main() async {
   await dotenv.load();
@@ -14,12 +15,10 @@ void main() async {
   dio.interceptors.add(MarvelInterceptor());
   final apiService = ApiService(dio);
   final characterRepository = CharacterRepository(apiService: apiService);
-  final marvelApiProvider =
-      MarvelApiProvider(characterRepository: characterRepository);
 
   runApp(
-    ChangeNotifierProvider.value(
-      value: marvelApiProvider,
+    BlocProvider(
+      create: (context) => MarvelBloc(characterRepository: characterRepository),
       child: const MyApp(),
     ),
   );
