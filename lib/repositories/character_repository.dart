@@ -1,5 +1,6 @@
 import 'package:marvel_flutter/models/character.dart';
 
+import '../models/comics.dart';
 import '../services/api_service.dart';
 
 class CharacterRepository {
@@ -22,5 +23,12 @@ class CharacterRepository {
     final data =
         await apiService.getCharacterByStartName(offset, limit, nameStartsWith);
     return (data as List).map((json) => Character.fromJson(json)).toList();
+  }
+
+  Future<List<Comics>> getComicsByCharacterId(int characterId) async {
+    final data = await apiService.getComicsByCharacterId(characterId);
+    return (data as List)
+        .map((json) => Comics.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 }

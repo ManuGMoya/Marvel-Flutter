@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/marvel_bloc.dart';
-import '../bloc/marvel_event.dart';
-import '../bloc/marvel_state.dart';
+import '../bloc/home/home_bloc.dart';
+import '../bloc/home/home_event.dart';
+import '../bloc/home/home_state.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      BlocProvider.of<MarvelBloc>(context).add(const FetchCharacters(0, 20));
+      BlocProvider.of<HomeBloc>(context).add(const FetchCharacters(0, 20));
     });
   }
 
@@ -45,14 +45,14 @@ class SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: BlocBuilder<MarvelBloc, MarvelState>(
+        child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
-            if (state is MarvelLoading) {
+            if (state is HomeLoading) {
               return RotationTransition(
                 turns: _controller,
                 child: Image.asset('assets/logo.png'),
               );
-            } else if (state is MarvelLoaded) {
+            } else if (state is HomeLoaded) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 navigateToHomeScreen();
               });

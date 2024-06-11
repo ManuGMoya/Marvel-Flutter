@@ -6,7 +6,7 @@ class Character {
   final String? name;
   final String? description;
   final Image? thumbnail;
-  final ComicList? comics;
+  final int? comics;
 
   Character(
       {this.id, this.name, this.description, this.thumbnail, this.comics});
@@ -17,7 +17,7 @@ class Character {
       name: json['name'],
       description: json['description'],
       thumbnail: Image.fromJson(json['thumbnail']),
-      comics: ComicList.fromJson(json['comics']),
+      comics: ComicList.fromJson(json['comics']).available,
     );
   }
 }

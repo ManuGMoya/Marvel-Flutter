@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-abstract class MarvelEvent extends Equatable {
-  const MarvelEvent();
+abstract class HomeEvent extends Equatable {
+  const HomeEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class FetchCharacters extends MarvelEvent {
+class FetchCharacters extends HomeEvent {
   final int start;
   final int count;
 

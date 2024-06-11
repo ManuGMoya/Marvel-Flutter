@@ -13,7 +13,8 @@ class ComicList {
       available: json['available'],
       returned: json['returned'],
       collectionURI: json['collectionURI'],
-      items: (json['items'] as List).map((i) => ComicSummary.fromJson(i)).toList(),
+      items:
+          (json['items'] as List).map((i) => ComicSummary.fromJson(i)).toList(),
     );
   }
 }

@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/marvel_bloc.dart';
-import '../bloc/marvel_event.dart';
-import '../bloc/marvel_state.dart';
+import '../bloc/detail/detail_bloc.dart';
+import '../bloc/detail/detail_event.dart';
+import '../bloc/home/home_bloc.dart';
+import '../bloc/home/home_event.dart';
+import '../bloc/home/home_state.dart';
 import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,20 +20,20 @@ class HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   int _nextPage = 20;
   double _scrollPosition = 0.0;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(_nextPage, 20));
-    _nextPage += 20;
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          !_isLoading) {
         _scrollPosition = _scrollController.position.pixels;
-        BlocProvider.of<MarvelBloc>(context)
-            .add(FetchCharacters(_nextPage, 20));
+        BlocProvider.of<HomeBloc>(context).add(FetchCharacters(_nextPage, 20));
         _nextPage += 20;
+        _isLoading = true;
       }
     });
   }
@@ -46,11 +48,11 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Marvel Characters')),
-      body: BlocBuilder<MarvelBloc, MarvelState>(
+      body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          if (state is MarvelLoading) {
+          if (state is HomeLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is MarvelLoaded) {
+          } else if (state is HomeLoaded) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (_scrollController.hasClients) {
                 _scrollController.jumpTo(_scrollPosition);
@@ -67,8 +69,15 @@ class HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CharacterDetailScreen(
-                            character: state.characters[index]),
+                        builder: (context) => BlocProvider<DetailBloc>(
+                          create: (context) => DetailBloc(
+                            characterRepository:
+                                BlocProvider.of<HomeBloc>(context)
+                                    .characterRepository,
+                          )..add(GetCharacterDetail(
+                              state.characters[index].id ?? -1)),
+                          child: const CharacterDetailScreen(),
+                        ),
                       ),
                     );
                   },

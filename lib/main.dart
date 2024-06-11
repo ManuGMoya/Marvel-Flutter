@@ -7,7 +7,7 @@ import 'package:marvel_flutter/screens/splash_screen.dart';
 import 'package:marvel_flutter/services/api_service.dart';
 import 'package:marvel_flutter/services/marvel_interceptor.dart';
 
-import 'bloc/marvel_bloc.dart';
+import 'bloc/home/home_bloc.dart';
 
 void main() async {
   await dotenv.load();
@@ -18,7 +18,7 @@ void main() async {
 
   runApp(
     BlocProvider(
-      create: (context) => MarvelBloc(characterRepository: characterRepository),
+      create: (context) => HomeBloc(characterRepository: characterRepository),
       child: const MyApp(),
     ),
   );
