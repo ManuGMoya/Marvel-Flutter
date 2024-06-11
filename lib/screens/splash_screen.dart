@@ -26,7 +26,7 @@ class SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(0, 20));
+      BlocProvider.of<MarvelBloc>(context).add(const FetchCharacters(0, 20));
     });
   }
 

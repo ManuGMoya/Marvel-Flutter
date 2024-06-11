@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:marvel_flutter/repositories/character_repository.dart';
-import 'package:marvel_flutter/screens/splash_screen.dart'; // Asegúrate de importar SplashScreen
+import 'package:marvel_flutter/screens/splash_screen.dart';
 import 'package:marvel_flutter/services/api_service.dart';
 import 'package:marvel_flutter/services/marvel_interceptor.dart';
 
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SplashScreen(), // Cambia HomeScreen a SplashScreen
+      home: const SplashScreen(),
     );
   }
 }

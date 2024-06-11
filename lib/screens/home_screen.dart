@@ -17,21 +17,23 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   int _nextPage = 20;
+  double _scrollPosition = 0.0;
 
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(_nextPage, 20));
+    _nextPage += 20;
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
+        _scrollPosition = _scrollController.position.pixels;
         BlocProvider.of<MarvelBloc>(context)
             .add(FetchCharacters(_nextPage, 20));
         _nextPage += 20;
       }
     });
-
-    BlocProvider.of<MarvelBloc>(context).add(FetchCharacters(0, 20));
   }
 
   @override
@@ -49,6 +51,11 @@ class HomeScreenState extends State<HomeScreen> {
           if (state is MarvelLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is MarvelLoaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_scrollController.hasClients) {
+                _scrollController.jumpTo(_scrollPosition);
+              }
+            });
             return GridView.builder(
               controller: _scrollController,
               itemCount: state.characters.length,
