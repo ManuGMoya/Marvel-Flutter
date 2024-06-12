@@ -16,11 +16,13 @@ class GetCharacterDetail extends DetailEvent {
   List<Object> get props => [id];
 }
 
-class GetCharacterComics extends DetailEvent {
+class FetchCharacterComics extends DetailEvent {
   final int characterId;
+  final int start;
+  final int count;
 
-  const GetCharacterComics(this.characterId);
+  const FetchCharacterComics(this.characterId, this.start, this.count);
 
   @override
-  List<Object> get props => [characterId];
+  List<Object> get props => [characterId, start, count];
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../models/character.dart';
-import '../../models/comics.dart';
+import '../../models/comic.dart';
 
 abstract class DetailState extends Equatable {
   const DetailState();
@@ -14,7 +14,7 @@ class DetailLoading extends DetailState {}
 
 class DetailSuccess extends DetailState {
   final Character character;
-  final List<Comics> comics;
+  final List<Comic> comics;
 
   const DetailSuccess(this.character, this.comics);
 

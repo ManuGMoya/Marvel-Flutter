@@ -103,7 +103,7 @@ class HomeScreenState extends State<HomeScreen> {
                 characterRepository:
                     BlocProvider.of<HomeBloc>(context).characterRepository,
               )..add(GetCharacterDetail(character.id ?? -1)),
-              child: const CharacterDetailScreen(),
+              child: CharacterDetailScreen(characterId: character.id ?? -1),
             ),
           ),
         );

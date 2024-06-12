@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 
+import '../models/comic.dart';
 import 'marvel_interceptor.dart';
 
 class ApiService {
@@ -10,7 +9,6 @@ class ApiService {
 
   ApiService(this.dio) {
     dio.interceptors.add(MarvelInterceptor());
-    dio.transformer = _MyTransformer();
   }
 
   Future<dynamic> getAllCharacters(int offset, int limit) async {
@@ -44,20 +42,22 @@ class ApiService {
     return _processResponse(response);
   }
 
-  Future<dynamic> getComicsByCharacterId(int characterId) async {
-    final response =
-        await dio.get('$baseUrl/v1/public/characters/$characterId/comics');
-    var results = _processResponse(response);
-
-    // Comprueba si los resultados son null
-    if (results == null) {
-      // Si los resultados son null, devuelve una lista vacía
-      return [];
-    } else if (results is List<dynamic>) {
-      // Si los resultados son una lista, devuelve la lista tal cual
-      return results;
+  Future<ComicsResponse> getComicsByCharacterId(
+      int characterId, int offset, int limit) async {
+    final response = await dio.get(
+        '$baseUrl/v1/public/characters/$characterId/comics',
+        queryParameters: {'offset': offset, 'limit': limit});
+    if (response.statusCode == 200) {
+      var decodedResponse = response.data;
+      var data = decodedResponse['data'];
+      var results = data['results'];
+      var total = data['total'].toInt();
+      final comics = (results as List)
+          .map((json) => Comic.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return ComicsResponse(comics: comics, total: total);
     } else {
-      throw Exception('Expected a list but got ${results.runtimeType}');
+      throw Exception('Failed to load data from API');
     }
   }
 
@@ -73,22 +73,9 @@ class ApiService {
   }
 }
 
-class _MyTransformer extends DefaultTransformer {
-  _MyTransformer() : super(jsonDecodeCallback: parseJson);
+class ComicsResponse {
+  final List<Comic> comics;
+  final int total;
 
-  @override
-  Future<String> transformRequest(RequestOptions options) {
-    print('Request: ${options.data}');
-    return super.transformRequest(options);
-  }
-
-  @override
-  Future transformResponse(RequestOptions options, ResponseBody responseBody) {
-    print('Response: ${responseBody.toString()}');
-    return super.transformResponse(options, responseBody);
-  }
-
-  static dynamic parseJson(String text) {
-    return jsonDecode(text);
-  }
+  ComicsResponse({required this.comics, required this.total});
 }

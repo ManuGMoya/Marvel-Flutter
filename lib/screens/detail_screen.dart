@@ -3,11 +3,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../bloc/detail/detail_bloc.dart';
+import '../bloc/detail/detail_event.dart';
 import '../bloc/detail/detail_state.dart';
-import '../models/comics.dart';
+import '../models/comic.dart';
 
-class CharacterDetailScreen extends StatelessWidget {
-  const CharacterDetailScreen({super.key});
+class CharacterDetailScreen extends StatefulWidget {
+  final int characterId;
+
+  const CharacterDetailScreen({required this.characterId, super.key});
+
+  @override
+  CharacterDetailScreenState createState() => CharacterDetailScreenState();
+}
+
+class CharacterDetailScreenState extends State<CharacterDetailScreen> {
+  final ScrollController _scrollController = ScrollController();
+  int _nextPage = 20;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        BlocProvider.of<DetailBloc>(context)
+            .add(FetchCharacterComics(widget.characterId, _nextPage, 20));
+        _nextPage += 20;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,34 +49,55 @@ class CharacterDetailScreen extends StatelessWidget {
           if (state is DetailLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is DetailSuccess) {
-            return ListView(
-              children: <Widget>[
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Center(
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/logo.png',
-                      image:
-                          "${state.character.thumbnail?.path}.${state.character.thumbnail?.extension}",
-                      fit: BoxFit.scaleDown,
-                    ),
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Center(
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/logo.png',
+                            image:
+                                "${state.character.thumbnail?.path}.${state.character.thumbnail?.extension}",
+                            fit: BoxFit.scaleDown,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          state.character.name ?? '',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          state.character.description ?? '',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    state.character.name ?? '',
-                    style: Theme.of(context).textTheme.titleLarge,
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index < state.comics.length) {
+                        return ComicItem(state.comics[index]);
+                      } else if (BlocProvider.of<DetailBloc>(context)
+                          .hasMoreComics) {
+                        return const ComicSkeleton();
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                    childCount: state.comics.length + 1,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    state.character.description ?? '',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                ...state.comics.map((comic) => ComicItem(comic)),
               ],
             );
           } else if (state is DetailError) {
@@ -60,7 +112,7 @@ class CharacterDetailScreen extends StatelessWidget {
 }
 
 class ComicItem extends StatelessWidget {
-  final Comics comic;
+  final Comic comic;
 
   const ComicItem(this.comic, {super.key});
 
@@ -101,6 +153,17 @@ class ComicItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ComicSkeleton extends StatelessWidget {
+  const ComicSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }

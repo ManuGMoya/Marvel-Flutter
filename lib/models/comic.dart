@@ -1,15 +1,15 @@
 import 'package:marvel_flutter/models/image.dart';
 
-class Comics {
+class Comic {
   final int? id;
   final String? title;
   final List<DateDto>? dates;
   final Image? thumbnail;
 
-  Comics({this.id, this.title, this.dates, this.thumbnail});
+  Comic({this.id, this.title, this.dates, this.thumbnail});
 
-  factory Comics.fromJson(Map<String, dynamic> json) {
-    return Comics(
+  factory Comic.fromJson(Map<String, dynamic> json) {
+    return Comic(
       id: json['id'],
       title: json['title'],
       dates: (json['dates'] as List).map((i) => DateDto.fromJson(i)).toList(),
