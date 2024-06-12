@@ -12,10 +12,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({required this.characterRepository}) : super(HomeInitial()) {
     on<FetchCharacters>((event, emit) async {
       emit(HomeLoading());
-      final newCharacters =
-          await characterRepository.getAllCharacters(event.start, event.count);
-      characters = [...characters, ...newCharacters];
-      emit(HomeLoaded(characters));
+      try {
+        final newCharacters = await characterRepository.getAllCharacters(
+            event.start, event.count);
+        characters = [...characters, ...newCharacters];
+        emit(HomeLoaded(characters));
+      } catch (e) {
+        emit(HomeError(e.toString()));
+      }
     });
   }
 }

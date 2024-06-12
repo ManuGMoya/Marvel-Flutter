@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:marvel_flutter/services/check_internet.dart';
 
 import '../models/comic.dart';
 import 'marvel_interceptor.dart';
@@ -12,52 +13,65 @@ class ApiService {
   }
 
   Future<dynamic> getAllCharacters(int offset, int limit) async {
-    final response = await dio.get('$baseUrl/v1/public/characters',
-        queryParameters: {'offset': offset, 'limit': limit});
-    return _processResponse(response);
+    if (await CheckInternet.isConnected()) {
+      final response = await dio.get('$baseUrl/v1/public/characters',
+          queryParameters: {'offset': offset, 'limit': limit});
+      return _processResponse(response);
+    } else {
+      throw Exception('Not Internet connection');
+    }
   }
 
   Future<dynamic> getCharacterById(int characterId) async {
-    final response =
-        await dio.get('$baseUrl/v1/public/characters/$characterId');
-    var results = _processResponse(response);
-
-    // Comprueba si los datos son una lista
-    if (results is List<dynamic>) {
-      // Si es una lista, toma el primer elemento
-      return results[0];
+    if (await CheckInternet.isConnected()) {
+      final response =
+          await dio.get('$baseUrl/v1/public/characters/$characterId');
+      var results = _processResponse(response);
+      if (results is List<dynamic>) {
+        return results[0];
+      } else {
+        throw Exception('Expected a list but got ${results.runtimeType}');
+      }
     } else {
-      throw Exception('Expected a list but got ${results.runtimeType}');
+      throw Exception('Not Internet connection');
     }
   }
 
   Future<dynamic> getCharacterByStartName(
       int offset, int limit, String nameStartsWith) async {
-    final response = await dio.get('$baseUrl/v1/public/characters',
-        queryParameters: {
-          'offset': offset,
-          'limit': limit,
-          'nameStartsWith': nameStartsWith
-        });
-    return _processResponse(response);
+    if (await CheckInternet.isConnected()) {
+      final response = await dio.get('$baseUrl/v1/public/characters',
+          queryParameters: {
+            'offset': offset,
+            'limit': limit,
+            'nameStartsWith': nameStartsWith
+          });
+      return _processResponse(response);
+    } else {
+      throw Exception('Not Internet connection');
+    }
   }
 
-  Future<ComicsResponse> getComicsByCharacterId(
+  Future<dynamic> getComicsByCharacterId(
       int characterId, int offset, int limit) async {
-    final response = await dio.get(
-        '$baseUrl/v1/public/characters/$characterId/comics',
-        queryParameters: {'offset': offset, 'limit': limit});
-    if (response.statusCode == 200) {
-      var decodedResponse = response.data;
-      var data = decodedResponse['data'];
-      var results = data['results'];
-      var total = data['total'].toInt();
-      final comics = (results as List)
-          .map((json) => Comic.fromJson(json as Map<String, dynamic>))
-          .toList();
-      return ComicsResponse(comics: comics, total: total);
+    if (await CheckInternet.isConnected()) {
+      final response = await dio.get(
+          '$baseUrl/v1/public/characters/$characterId/comics',
+          queryParameters: {'offset': offset, 'limit': limit});
+      if (response.statusCode == 200) {
+        var decodedResponse = response.data;
+        var data = decodedResponse['data'];
+        var results = data['results'];
+        var total = data['total'].toInt();
+        final comics = (results as List)
+            .map((json) => Comic.fromJson(json as Map<String, dynamic>))
+            .toList();
+        return ComicsResponse(comics: comics, total: total);
+      } else {
+        throw Exception('Failed to load data from API');
+      }
     } else {
-      throw Exception('Failed to load data from API');
+      throw Exception('Not Internet connection');
     }
   }
 

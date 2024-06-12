@@ -92,7 +92,7 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
                           .hasMoreComics) {
                         return const ComicSkeleton();
                       } else {
-                        return SizedBox.shrink();
+                        return const SizedBox.shrink();
                       }
                     },
                     childCount: state.comics.length + 1,
@@ -101,7 +101,21 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
               ],
             );
           } else if (state is DetailError) {
-            return Center(child: Text(state.error));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Error: ${state.error}'),
+                  TextButton(
+                    child: const Text('Retry'),
+                    onPressed: () {
+                      BlocProvider.of<DetailBloc>(context)
+                          .add(GetCharacterDetail(widget.characterId));
+                    },
+                  ),
+                ],
+              ),
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }

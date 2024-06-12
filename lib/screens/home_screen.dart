@@ -24,6 +24,9 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   List<Character> _characters = [];
 
+  int _lastFailedStart = 0;
+  int _lastFailedCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,8 @@ class HomeScreenState extends State<HomeScreen> {
               _scrollController.position.maxScrollExtent &&
           !_isLoading) {
         _scrollPosition = _scrollController.position.pixels;
+        _lastFailedStart = _nextPage;
+        _lastFailedCount = 20;
         BlocProvider.of<HomeBloc>(context).add(FetchCharacters(_nextPage, 20));
         _nextPage += 20;
         _isLoading = true;
@@ -84,8 +89,25 @@ class HomeScreenState extends State<HomeScreen> {
                 return buildCharacterCard(_characters[index]);
               },
             );
+          } else if (state is HomeError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Error: ${state.message}'),
+                  TextButton(
+                    child: const Text('Retry'),
+                    onPressed: () {
+                      BlocProvider.of<HomeBloc>(context).add(
+                          FetchCharacters(_lastFailedStart, _lastFailedCount));
+                      _isLoading = true;
+                    },
+                  ),
+                ],
+              ),
+            );
           } else {
-            return const Center(child: Text('Error'));
+            return const Center(child: Text('Unknown state'));
           }
         },
       ),

@@ -56,9 +56,25 @@ class SplashScreenState extends State<SplashScreen>
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 navigateToHomeScreen();
               });
-              return const SizedBox.shrink(); // Return an empty widget
+              return const SizedBox.shrink();
+            } else if (state is HomeError) {
+              _controller.stop();
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Error: ${state.message}'),
+                  TextButton(
+                    child: const Text('Retry'),
+                    onPressed: () {
+                      BlocProvider.of<HomeBloc>(context)
+                          .add(const FetchCharacters(0, 20));
+                      _controller.repeat();
+                    },
+                  ),
+                ],
+              );
             } else {
-              return const Text('Error');
+              return const Text('Unknown state');
             }
           },
         ),

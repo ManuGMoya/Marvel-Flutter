@@ -16,7 +16,7 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
       try {
         final character = await characterRepository.getCharacterById(event.id);
         emit(DetailSuccess(character, const []));
-        add(FetchCharacterComics(character.id!, 0, 20));
+        add(FetchCharacterComics(event.id, 0, 20));
       } catch (e) {
         emit(DetailError(e.toString()));
       }

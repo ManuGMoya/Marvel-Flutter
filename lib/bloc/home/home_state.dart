@@ -21,3 +21,9 @@ class HomeLoaded extends HomeState {
   @override
   List<Object> get props => [characters];
 }
+
+class HomeError extends HomeState {
+  final String message;
+
+  const HomeError(this.message);
+}
