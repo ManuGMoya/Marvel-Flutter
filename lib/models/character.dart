@@ -1,4 +1,4 @@
-import 'comic_list.dart';
+import 'character_comics.dart';
 import 'image.dart';
 
 class Character {
@@ -17,7 +17,7 @@ class Character {
       name: json['name'],
       description: json['description'],
       thumbnail: Image.fromJson(json['thumbnail']),
-      comics: ComicList.fromJson(json['comics']).available,
+      comics: CharacterComics.fromJson(json['comics']).available,
     );
   }
 }

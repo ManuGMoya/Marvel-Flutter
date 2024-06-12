@@ -1,15 +1,16 @@
 import 'comic_summary.dart';
 
-class ComicList {
+class CharacterComics {
   final int? available;
   final int? returned;
   final String? collectionURI;
   final List<ComicSummary>? items;
 
-  ComicList({this.available, this.returned, this.collectionURI, this.items});
+  CharacterComics(
+      {this.available, this.returned, this.collectionURI, this.items});
 
-  factory ComicList.fromJson(Map<String, dynamic> json) {
-    return ComicList(
+  factory CharacterComics.fromJson(Map<String, dynamic> json) {
+    return CharacterComics(
       available: json['available'],
       returned: json['returned'],
       collectionURI: json['collectionURI'],
