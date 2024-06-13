@@ -6,8 +6,8 @@ class Image {
 
   factory Image.fromJson(Map<String, dynamic> json) {
     return Image(
-      path: json['path'],
-      extension: json['extension'],
+      path: json['path'] as String?,
+      extension: json['extension'] as String?,
     );
   }
 }

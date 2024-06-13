@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:repository/repository.dart';
 
 import '../bloc/detail/detail_bloc.dart';
 import '../bloc/detail/detail_event.dart';
 import '../bloc/detail/detail_state.dart';
-import '../models/comic.dart';
 
 class CharacterDetailScreen extends StatefulWidget {
   final int characterId;

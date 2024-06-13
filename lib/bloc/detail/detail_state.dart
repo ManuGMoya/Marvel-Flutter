@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
-
-import '../../models/character.dart';
-import '../../models/comic.dart';
+import 'package:repository/repository.dart';
 
 abstract class DetailState extends Equatable {
   const DetailState();

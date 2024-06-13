@@ -1,10 +1,16 @@
 name: api_client
-description: A Very Good Project created by Very Good CLI.
+description: Api Client Package.
 version: 0.1.0+1
 publish_to: none
 
 environment:
   sdk: ^3.4.0
+
+dependencies:
+  connectivity: ^3.0.6
+  dio: ^5.0.0
+  crypto: ^3.0.1
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   mocktail: ^1.0.3

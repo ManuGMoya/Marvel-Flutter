@@ -1,4 +1,4 @@
-import 'comic_summary.dart';
+import 'package:repository/src/models/comic_summary.dart';
 
 class CharacterComics {
   final int? available;
@@ -11,11 +11,10 @@ class CharacterComics {
 
   factory CharacterComics.fromJson(Map<String, dynamic> json) {
     return CharacterComics(
-      available: json['available'],
-      returned: json['returned'],
-      collectionURI: json['collectionURI'],
-      items:
-          (json['items'] as List).map((i) => ComicSummary.fromJson(i)).toList(),
+      available: json['available'] as int?,
+      returned: json['returned'] as int?,
+      collectionURI: json['collectionURI'] as String?,
+      items: (json['items'] as List).map((i) => ComicSummary.fromJson(i as Map<String, dynamic>)).toList(),
     );
   }
 }

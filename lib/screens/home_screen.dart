@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marvel_flutter/models/character.dart';
+import 'package:repository/repository.dart';
 
 import '../bloc/detail/detail_bloc.dart';
 import '../bloc/detail/detail_event.dart';

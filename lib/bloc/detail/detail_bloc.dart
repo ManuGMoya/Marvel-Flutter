@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repository/repository.dart';
 
-import '../../models/comic.dart';
-import '../../repositories/character_repository.dart';
 import 'detail_event.dart';
 import 'detail_state.dart';
 

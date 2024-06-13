@@ -1,4 +1,4 @@
-import 'package:marvel_flutter/models/image.dart';
+import 'package:repository/src/models/image.dart';
 
 class Comic {
   final int? id;
@@ -10,10 +10,12 @@ class Comic {
 
   factory Comic.fromJson(Map<String, dynamic> json) {
     return Comic(
-      id: json['id'],
-      title: json['title'],
-      dates: (json['dates'] as List).map((i) => DateDto.fromJson(i)).toList(),
-      thumbnail: Image.fromJson(json['thumbnail']),
+      id: json['id'] as int?,
+      title: json['title'] as String?,
+      dates: (json['dates'] as List)
+          .map((i) => DateDto.fromJson(i as Map<String, dynamic>))
+          .toList(),
+      thumbnail: Image.fromJson(json['thumbnail'] as Map<String, dynamic>),
     );
   }
 }
@@ -26,8 +28,8 @@ class DateDto {
 
   factory DateDto.fromJson(Map<String, dynamic> json) {
     return DateDto(
-      type: json['type'],
-      date: DateTime.parse(json['date']),
+      type: json['type'] as String?,
+      date: DateTime.parse(json['date'] as String),
     );
   }
 }

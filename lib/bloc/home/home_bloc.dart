@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repository/repository.dart';
 
-import '../../models/character.dart';
-import '../../repositories/character_repository.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
