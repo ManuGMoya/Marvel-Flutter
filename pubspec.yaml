@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  connectivity: ^3.0.6
 
   intl:
 
@@ -48,7 +49,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  connectivity: ^3.0.6
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

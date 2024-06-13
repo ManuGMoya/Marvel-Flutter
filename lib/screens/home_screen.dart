@@ -68,7 +68,7 @@ class HomeScreenState extends State<HomeScreen> {
                 if (index >= _characters.length) {
                   return const CharacterSkeleton();
                 } else {
-                  return buildCharacterCard(_characters[index]);
+                  return CharacterCard(character: _characters[index]);
                 }
               },
             );
@@ -86,7 +86,7 @@ class HomeScreenState extends State<HomeScreen> {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2),
               itemBuilder: (context, index) {
-                return buildCharacterCard(_characters[index]);
+                return CharacterCard(character: _characters[index]);
               },
             );
           } else if (state is HomeError) {
@@ -113,8 +113,15 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  Widget buildCharacterCard(Character character) {
+class CharacterCard extends StatelessWidget {
+  final Character character;
+
+  const CharacterCard({super.key, required this.character});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
