@@ -83,21 +83,26 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
                     ],
                   ),
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index < state.comics.length) {
-                        return ComicItem(state.comics[index]);
-                      } else if (BlocProvider.of<DetailBloc>(context)
-                          .hasMoreComics) {
-                        return const ComicSkeleton();
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
-                    childCount: state.comics.length + 1,
+                if (state.comics.isNotEmpty)
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        if (index < state.comics.length) {
+                          return ComicItem(state.comics[index]);
+                        } else if (BlocProvider.of<DetailBloc>(context)
+                            .hasMoreComics) {
+                          return const ComicSkeleton();
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                      childCount: state.comics.length + 1,
+                    ),
                   ),
-                ),
+                if (state.comics.isEmpty)
+                  const SliverFillRemaining(
+                    child: Center(child: Text('No comics available')),
+                  ),
               ],
             );
           } else if (state is DetailError) {
