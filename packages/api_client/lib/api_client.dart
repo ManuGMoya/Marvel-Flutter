@@ -1,4 +1,6 @@
-/// A Very Good Project created by Very Good CLI.
+/// Api.
 library;
 
 export 'src/api_client.dart';
+export 'src/exceptions/exceptions.dart';
+export 'src/interceptors/interceptors.dart';
