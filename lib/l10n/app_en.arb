@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "homeScreenAppBarTitle": "Marvel Characters",
+  "@homeScreenAppAppBarTitle": {
+    "description": "Text shown in the AppBar of the Home Screen"
+  },
+  "comicsCount": "Comics: {count}",
+  "noComicsAvailable": "No comics available",
+  "errorState": "Error: {error}",
+  "retry": "Retry",
+  "characterDetailsAppBarTitle": "Character Details",
+  "unknownState": "Unknown state"
+}

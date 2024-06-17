@@ -1,0 +1,13 @@
+{
+  "@@locale": "es",
+  "homeScreenAppBarTitle": "Personajes de Marvel",
+  "@homeScreenAppBarTitle": {
+    "description": "Texto mostrado en la AppBar de la pantalla de inicio"
+  },
+  "comicsCount": "Comics: {count}",
+  "noComicsAvailable": "No hay cómics disponibles",
+  "errorState": "Error: {error}",
+  "retry": "Reintentar",
+  "characterDetailsAppBarTitle": "Detalles del personaje",
+  "unknownState":"Unknown state"
+}

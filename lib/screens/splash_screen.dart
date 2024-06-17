@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_event.dart';
@@ -62,9 +63,9 @@ class SplashScreenState extends State<SplashScreen>
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Error: ${state.message}'),
+                  Text(AppLocalizations.of(context).errorState(state.message)),
                   TextButton(
-                    child: const Text('Retry'),
+                    child: Text(AppLocalizations.of(context).retry),
                     onPressed: () {
                       BlocProvider.of<HomeBloc>(context)
                           .add(const FetchCharacters(0, 20));
@@ -74,7 +75,7 @@ class SplashScreenState extends State<SplashScreen>
                 ],
               );
             } else {
-              return const Text('Unknown state');
+              return Text(AppLocalizations.of(context).unknownState);
             }
           },
         ),

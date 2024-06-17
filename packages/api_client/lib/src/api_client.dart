@@ -1,79 +1,181 @@
-import 'package:api_client/src/check_internet.dart';
-import 'package:api_client/src/marvel_interceptor.dart';
+// coverage:ignore-file
+
+import 'dart:io';
+
+import 'package:api_client/api_client.dart';
 import 'package:dio/dio.dart';
 
-class ApiService {
-  ApiService(this.dio) {
-    dio.interceptors.add(MarvelInterceptor());
+/// {@template api_client}
+/// API client for JSX that uses the
+/// [Dio](https://pub.dev/packages/dio) package.
+/// {@endtemplate}
+class ApiClient {
+  /// {@macro api_client}
+  ApiClient({
+    Dio? dio,
+    List<Interceptor>? interceptors,
+  }) : _dio = dio ?? Dio() {
+    interceptors?.forEach((element) {
+      _dio.interceptors.add(element);
+    });
   }
 
-  final String baseUrl = 'https://gateway.marvel.com/';
-  Dio dio = Dio();
+  final Dio _dio;
 
-  Future<dynamic> getAllCharacters(int offset, int limit) async {
-    if (await CheckInternet.isConnected()) {
-      final response = await dio.get('$baseUrl/v1/public/characters',
-          queryParameters: {'offset': offset, 'limit': limit});
-      return _processResponse(response);
-    } else {
-      throw Exception('Not Internet connection');
+  /// GET request to [path] with [queryParameters]
+  Future<T?> get<T>(
+    String path, {
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+    Object? body,
+  }) async {
+    late final Response<T> response;
+    try {
+      response = await _dio.get(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      );
+    } catch (error, stackTrace) {
+      _handleHttpError(
+        (error is DioException) ? error.response?.statusCode ?? -1 : -1,
+        error,
+        stackTrace,
+      );
     }
+
+    return _handleResponse(response);
   }
 
-  Future<dynamic> getCharacterById(int characterId) async {
-    if (await CheckInternet.isConnected()) {
-      final response =
-          await dio.get('$baseUrl/v1/public/characters/$characterId');
-      final results = _processResponse(response);
-      if (results is List<dynamic>) {
-        return results[0];
-      } else {
-        throw Exception('Expected a list but got ${results.runtimeType}');
+  /// POST request to [path] with [queryParameters] and [body]
+  Future<T?> post<T>(
+    String path, {
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+    Object? body,
+  }) async {
+    late final Response<T> response;
+    try {
+      final optionsHeaders = <String, dynamic>{
+        HttpHeaders.contentTypeHeader: 'application/json',
+      };
+      if (headers != null) {
+        optionsHeaders.addAll(headers);
       }
-    } else {
-      throw Exception('Not Internet connection');
+
+      response = await _dio.post(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: optionsHeaders),
+      );
+    } catch (error, stackTrace) {
+      _handleHttpError(
+        (error is DioException) ? error.response?.statusCode ?? -1 : -1,
+        error,
+        stackTrace,
+      );
     }
+
+    return _handleResponse(response);
   }
 
-  Future<dynamic> getCharacterByStartName(
-      int offset, int limit, String nameStartsWith) async {
-    if (await CheckInternet.isConnected()) {
-      final response = await dio.get('$baseUrl/v1/public/characters',
-          queryParameters: {
-            'offset': offset,
-            'limit': limit,
-            'nameStartsWith': nameStartsWith
-          });
-      return _processResponse(response);
-    } else {
-      throw Exception('Not Internet connection');
-    }
-  }
-
-  Future<dynamic> getComicsByCharacterId(
-      int characterId, int offset, int limit) async {
-    if (await CheckInternet.isConnected()) {
-      final response = await dio.get(
-          '$baseUrl/v1/public/characters/$characterId/comics',
-          queryParameters: {'offset': offset, 'limit': limit});
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        throw Exception('Failed to load data from API');
+  /// PUT request to [path] with [queryParameters] and [body]
+  Future<T?> put<T>(
+    String path, {
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+    Object? body,
+  }) async {
+    late final Response<T> response;
+    try {
+      final optionsHeaders = <String, dynamic>{
+        HttpHeaders.contentTypeHeader: 'application/json',
+      };
+      if (headers != null) {
+        optionsHeaders.addAll(headers);
       }
-    } else {
-      throw Exception('Not Internet connection');
+
+      response = await _dio.put(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: optionsHeaders),
+      );
+    } catch (error, stackTrace) {
+      _handleHttpError(
+        (error is DioException) ? error.response?.statusCode ?? -1 : -1,
+        error,
+        stackTrace,
+      );
     }
+
+    return _handleResponse(response);
   }
 
-  dynamic _processResponse(Response response) {
-    if (response.statusCode == 200) {
-      final decodedResponse = response.data;
-      final data = decodedResponse['data'];
-      final results = data['results'];
-      return results;
+  /// DELETE request to [path] with [queryParameters] and [body]
+  Future<T?> delete<T>(
+    String path, {
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+    Object? body,
+  }) async {
+    late final Response<T> response;
+    try {
+      final optionsHeaders = <String, dynamic>{
+        HttpHeaders.contentTypeHeader: 'application/json',
+      };
+      if (headers != null) {
+        optionsHeaders.addAll(headers);
+      }
+
+      response = await _dio.delete(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: optionsHeaders),
+      );
+    } catch (error, stackTrace) {
+      _handleHttpError(
+        (error is DioException) ? error.response?.statusCode ?? -1 : -1,
+        error,
+        stackTrace,
+      );
+    }
+
+    return _handleResponse(response);
+  }
+
+  void _handleHttpError(
+    int statusCode,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    final exception = switch (statusCode) {
+      400 => BadRequestException(error),
+      401 => UnauthorizedException(error),
+      403 => ForbiddenException(error),
+      _ => NetworkException(error),
+    };
+    Error.throwWithStackTrace(
+      exception,
+      error is DioException ? error.stackTrace : stackTrace,
+    );
+  }
+
+  bool _isSuccessful(Response<dynamic> response) {
+    final statusCode = response.statusCode ?? -1;
+    return statusCode >= 200 && statusCode < 300;
+  }
+
+  T? _handleResponse<T>(Response<T> response) {
+    final data = response.data;
+
+    if (_isSuccessful(response)) {
+      return data;
     } else {
-      throw Exception('Failed to load data from API');
+      throw const DeserializationException.emptyResponseBody();
     }
   }
 }

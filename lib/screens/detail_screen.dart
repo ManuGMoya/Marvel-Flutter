@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:repository/repository.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:marvel_flutter/components/comc_skelleton.dart';
+import 'package:marvel_flutter/components/comic_item.dart';
 
 import '../bloc/detail/detail_bloc.dart';
 import '../bloc/detail/detail_event.dart';
@@ -43,7 +44,9 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Character Detail')),
+      appBar: AppBar(
+          title:
+              Text(AppLocalizations.of(context).characterDetailsAppBarTitle)),
       body: BlocBuilder<DetailBloc, DetailState>(
         builder: (context, state) {
           if (state is DetailLoading) {
@@ -100,8 +103,10 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
                     ),
                   ),
                 if (state.comics.isEmpty)
-                  const SliverFillRemaining(
-                    child: Center(child: Text('No comics available')),
+                  SliverFillRemaining(
+                    child: Center(
+                        child: Text(
+                            AppLocalizations.of(context).noComicsAvailable)),
                   ),
               ],
             );
@@ -110,9 +115,9 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Error: ${state.error}'),
+                  Text(AppLocalizations.of(context).errorState(state.error)),
                   TextButton(
-                    child: const Text('Retry'),
+                    child: Text(AppLocalizations.of(context).retry),
                     onPressed: () {
                       BlocProvider.of<DetailBloc>(context)
                           .add(GetCharacterDetail(widget.characterId));
@@ -126,63 +131,6 @@ class CharacterDetailScreenState extends State<CharacterDetailScreen> {
           }
         },
       ),
-    );
-  }
-}
-
-class ComicItem extends StatelessWidget {
-  final Comic comic;
-
-  const ComicItem(this.comic, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    String dateString = comic.dates?.first.date?.toIso8601String() ?? '';
-    DateTime parsedDate = DateTime.parse(dateString);
-    String formattedDate = DateFormat('dd/MM/yy').format(parsedDate);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              comic.title ?? '',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              formattedDate,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 8.0),
-            if (comic.thumbnail != null)
-              AspectRatio(
-                aspectRatio: 1.0,
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/logo.png',
-                  image:
-                      "${comic.thumbnail?.path}.${comic.thumbnail?.extension}",
-                  fit: BoxFit.scaleDown,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ComicSkeleton extends StatelessWidget {
-  const ComicSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Card(
-      child: Center(child: CircularProgressIndicator()),
     );
   }
 }

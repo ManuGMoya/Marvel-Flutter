@@ -4,17 +4,22 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+/// `MarvelInterceptor` is a class that intercepts all requests made by Dio.
+/// It adds the necessary Marvel API parameters to each request.
 class MarvelInterceptor extends Interceptor {
-  final String privateKey = dotenv.env['MARVEL_PRIVATE_KEY']!;
-  final String publicKey = dotenv.env['MARVEL_PUBLIC_KEY']!;
+  final String _privateKey = dotenv.env['MARVEL_PRIVATE_KEY']!;
+  final String _publicKey = dotenv.env['MARVEL_PUBLIC_KEY']!;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final ts = DateTime.now().millisecondsSinceEpoch;
-    final hash = _generateHash(ts, privateKey, publicKey);
+    final hash = _generateHash(ts, _privateKey, _publicKey);
 
     options.queryParameters.addAll({
-      'apikey': publicKey,
+      'apikey': _publicKey,
       'ts': ts,
       'hash': hash,
     });

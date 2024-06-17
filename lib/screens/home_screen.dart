@@ -1,14 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:marvel_flutter/components/character_card.dart';
+import 'package:marvel_flutter/components/character_skelleton.dart';
 import 'package:repository/repository.dart';
 
-import '../bloc/detail/detail_bloc.dart';
-import '../bloc/detail/detail_event.dart';
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_event.dart';
 import '../bloc/home/home_state.dart';
-import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,7 +53,8 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Marvel Characters')),
+      appBar: AppBar(
+          title: Text(AppLocalizations.of(context).homeScreenAppBarTitle)),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
@@ -94,9 +94,9 @@ class HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Error: ${state.message}'),
+                  Text(AppLocalizations.of(context).errorState(state.message)),
                   TextButton(
-                    child: const Text('Retry'),
+                    child: Text(AppLocalizations.of(context).retry),
                     onPressed: () {
                       BlocProvider.of<HomeBloc>(context).add(
                           FetchCharacters(_lastFailedStart, _lastFailedCount));
@@ -107,93 +107,11 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             );
           } else {
-            return const Center(child: Text('Unknown state'));
+            return Center(
+              child: Text(AppLocalizations.of(context).unknownState),
+            );
           }
         },
-      ),
-    );
-  }
-}
-
-class CharacterCard extends StatelessWidget {
-  final Character character;
-
-  const CharacterCard({super.key, required this.character});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider<DetailBloc>(
-              create: (context) => DetailBloc(
-                characterRepository:
-                    BlocProvider.of<HomeBloc>(context).characterRepository,
-              )..add(GetCharacterDetail(character.id ?? -1)),
-              child: CharacterDetailScreen(characterId: character.id ?? -1),
-            ),
-          ),
-        );
-      },
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: CachedNetworkImage(
-                  imageUrl: "${character.thumbnail?.path}"
-                      ".${character.thumbnail?.extension}",
-                  placeholder: (context, url) => const AspectRatio(
-                    aspectRatio: 1.0,
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text("${character.name}"),
-              subtitle: Text("Comics: ${character.comics}"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CharacterSkeleton extends StatelessWidget {
-  const CharacterSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              color: Colors.grey[300],
-            ),
-          ),
-          ListTile(
-            title: Container(
-              color: Colors.grey[300],
-              height: 20.0,
-            ),
-            subtitle: Container(
-              color: Colors.grey[300],
-              height: 20.0,
-            ),
-          ),
-        ],
       ),
     );
   }
